@@ -36,10 +36,12 @@
             z-index: 9999;
             transition: transform 0.1s ease-out;
             display: none;
+            transform: translate(-50%, -50%); /* Centraliza a bolinha no mouse */
         }
         @media (min-width: 1024px) {
             body { cursor: none; }
             #custom-cursor { display: block; }
+            a, button, .project-card { cursor: none; } /* Garante que links não mostrem a mãozinha padrão */
         }
 
         .text-outline {
@@ -141,9 +143,9 @@
                     <a href="#portfolio" class="border-2 border-white px-10 py-5 font-sync text-xs uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 text-center">
                         Explorar Trabalhos
                     </a>
-                    <!-- Botão de Ação Atualizado com Link do Flickr -->
-                    <a href="https://drive.google.com/drive/folders/1WM2X2wLme7KH6MJA4oG26g47DgK5kpw5?usp=sharing" target="_blank" class="text-gray-400 hover:text-[#ff3e00] font-sync text-[10px] uppercase tracking-[0.3em] transition-colors flex items-center gap-2 group">
-                        <span class="w-8 h-px bg-gray-700 group-hover:bg-[#ff3e00] transition-all"></span>
+                    <!-- Link do Google Drive atualizado e destacado em laranja -->
+                    <a href="https://drive.google.com/drive/folders/1WM2X2wLme7KH6MJA4oG26g47DgK5kpw5?usp=sharing" target="_blank" class="text-[#ff3e00] hover:text-white font-sync text-[10px] uppercase tracking-[0.3em] transition-colors flex items-center gap-2 group">
+                        <span class="w-8 h-px bg-[#ff3e00] group-hover:bg-white transition-all"></span>
                         Acesse outros
                     </a>
                 </div>
@@ -240,7 +242,7 @@
                     <div class="text-4xl md:text-5xl font-light leading-tight tracking-tight mb-12">
                         Construindo narrativas visuais que <span class="highlight-box font-bold">desafiam o óbvio</span>.
                     </div>
-                    <!-- Foto de Perfil Redonda (Matheus Atualizada) -->
+                    <!-- Foto de Perfil Redonda -->
                     <div class="relative w-48 h-48 md:w-64 md:h-64 group">
                         <div class="absolute inset-0 rounded-full border-2 border-black/10 scale-110 group-hover:scale-125 transition-transform duration-700"></div>
                         <div class="w-full h-full rounded-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 border-4 border-white shadow-2xl">
@@ -273,7 +275,6 @@
             </a>
         </div>
         
-        <!-- Redes Sociais Filtradas e Atualizadas -->
         <div class="mt-32 flex flex-wrap justify-center gap-12 font-sync text-[10px] uppercase tracking-[0.3em] opacity-50">
             <a href="https://flickr.com/photos/197848363@N05" target="_blank" class="hover:text-[#ff3e00] transition-all">Flickr</a>
             <a href="https://www.instagram.com/matheus_nascimento321?igsh=MWM1dngzaXM1N280MA%3D%3D&utm_source=qr" target="_blank" class="hover:text-[#ff3e00] transition-all">Instagram</a>
@@ -297,14 +298,35 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Custom Cursor
+        // Custom Cursor Logic
         const cursor = document.getElementById('custom-cursor');
+        
+        // Atualiza a posição do cursor constantemente
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Intersection Observer
+        // Efeito de aumentar o cursor ao passar em itens clicáveis
+        function setupInteractables() {
+            const interactables = document.querySelectorAll('a, button, .project-card');
+            interactables.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                    cursor.style.mixBlendMode = 'difference';
+                    cursor.style.backgroundColor = 'white';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursor.style.mixBlendMode = 'normal';
+                    cursor.style.backgroundColor = 'var(--accent)';
+                });
+            });
+        }
+        
+        setupInteractables();
+
+        // Intersection Observer para efeitos de revelação
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -316,10 +338,16 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         // Smooth Scroll
-        document.querySelectorAll('nav a').forEach(anchor => {
+        document.querySelectorAll('nav a, a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
             });
         });
     </script>
